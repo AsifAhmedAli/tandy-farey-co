@@ -1,0 +1,145 @@
+<a href="./index.php" class="brand-icon">
+  <img src="../assets/images/logo.svg" alt="" />
+</a>
+<div class="d-flex justify-content-between align-items-center">
+  <div class="toggle-menu">
+    <button class="btn fs-28 p-0" id="show-sidebar-btn">
+      <span class="material-icons">menu</span>
+    </button>
+    <a href="./index.php" class="toggle-brand-icon">
+      <img
+        src="./assets/images/logo.svg"
+        width="220px"
+        class="img-fluid"
+        alt=""
+      />
+    </a>
+  </div>
+  <nav class="main-nav">
+    <ul class="ps-0 mb-0 list-unstyled">
+      <li>
+        <a href="">
+          <span class="material-icons navbar-icon">people_alt</span>
+          <span class="navbar-label">Agents</span>
+        </a>
+      </li>
+      <li class="">
+        <a href="">
+          <span class="material-icons navbar-icon">dashboard</span>
+          <span class="navbar-label">Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a href="">
+          <span class="material-icons navbar-icon">work</span>
+          <span class="navbar-label">Projects</span></a
+        >
+      </li>
+      <li>
+        <div class="btn-group">
+          <button
+            class="btn fs-25 p-0 text-secondary"
+            type="button"
+            id="manualClose"
+            data-bs-toggle="dropdown"
+            data-bs-auto-close="false"
+            aria-expanded="false"
+          >
+            <span class="material-icons">notifications</span>
+          </button>
+          <div
+            class="dropdown-menu notifications-container"
+            aria-labelledby="manualClose"
+          >
+            <div class="d-flex align-items-center justify-content-between">
+              <p class="mb-0 fs-15">Notifications</p>
+              <button class="btn text-info fs-10">Mark all as read</button>
+            </div>
+            <hr />
+            <ul class="list-unstyled">
+              <li>
+                <a class="dropdown-item" href="#">
+                  <div class="notification">
+                    <img src="./assets/images/icons/user-icon.png" width="44" height="44" alt="">
+                    <div class="flex-fill mx-3">
+                      <p class="title">George Street</p>
+                      <p class="summary">
+                        <strong>John Doe</strong> changed the status of <strong>G1</strong> to <strong>Available</strong>
+                      </p>
+                      <p class="time">10 min ago</p>
+                    </div>
+                    <img src="./assets/images/icons/building.png" width="49" height="47" alt="">
+                  </div>
+                </a>
+              </li>
+              <li>
+                <div class="dropdown-divider"></div>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#">
+                  <div class="notification">
+                    <img src="./assets/images/icons/user-icon.png" width="44" height="44" alt="">
+                    <div class="flex-fill mx-3">
+                      <p class="title">George Street</p>
+                      <p class="summary">
+                        <strong>John Doe</strong> changed the status of <strong>G1</strong> to <strong>Available</strong>
+                      </p>
+                      <p class="time">10 min ago</p>
+                    </div>
+                    <img src="./assets/images/icons/building.png" width="49" height="47" alt="">
+                  </div>
+                </a>
+              </li>
+              <li>
+                <div class="dropdown-divider"></div>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#">
+                  <div class="notification">
+                    <img src="./assets/images/icons/user-icon.png" width="44" height="44" alt="">
+                    <div class="flex-fill mx-3">
+                      <p class="title">George Street</p>
+                      <p class="summary">
+                        <strong>John Doe</strong> changed the status of <strong>G1</strong> to <strong>Available</strong>
+                      </p>
+                      <p class="time">10 min ago</p>
+                    </div>
+                    <img src="./assets/images/icons/building.png" width="49" height="47" alt="">
+                  </div>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="dropdown">
+          <button
+            class="btn fs-25 p-0 text-secondary"
+            type="button"
+            id="dropdownMenuButton1"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <span class="material-icons">account_box</span>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <li><a class="dropdown-item" href="#">My Profile</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+  $("#show-sidebar-btn").on("click", function () {
+    $("aside").show();
+  });
+
+  $("#hide-sidebar-btn").on("click", function () {
+    $("aside").hide();
+  });
+</script>
