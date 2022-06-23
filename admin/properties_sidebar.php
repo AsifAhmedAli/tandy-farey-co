@@ -13,6 +13,16 @@
             <span class="material-icons">arrow_back</span>
           </button>
         </div>
+        <?php
+         if(trim(basename($_SERVER['REQUEST_URI'], '?' . $_SERVER['QUERY_STRING'])) == "edit-property.php"){
+           ?>
+          <a href="./properties.php?id=<?php echo $id; ?>" class="btn fs-18" id="back_to_page">
+            <span class="material-icons">arrow_back</span>
+            Back
+          </a>
+           <?php
+         }
+        ?>
         <ul class="list-unstyled mb-0 ps-0 sidebar-items">
           <li>
             <a href="./project-overview.php?id=<?php echo $id; ?>" class="sidebar-item">

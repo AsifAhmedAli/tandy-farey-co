@@ -347,7 +347,7 @@ $total_reserved_properties_byloggedinuser = $data['total'];
               </div>
             </div>
           </div>
-          <div class="col-12 order-lg-1 order-0">
+          <div class="col-12 order-lg-1 order-0" onclick="myfunction('soldbyme')">
             <div
               class="rounded border border-1 p-4 text-center"
               style="background-color: #69d2e7"
@@ -370,7 +370,7 @@ $total_reserved_properties_byloggedinuser = $data['total'];
             </div>
           </div>
 
-          <div class="col-12 order-lg-1 order-0">
+          <div class="col-12 order-lg-1 order-0" onclick="myfunction('Reservedbyme')">
             <div
               class="rounded border border-1 p-4 text-center"
               style="background-color: #69d2e7"
@@ -436,6 +436,12 @@ $total_reserved_properties_byloggedinuser = $data['total'];
       <button type="button" class="btn btn-primary" id="btn6" data-bs-toggle="modal" data-bs-target="#exampleModal5">
         Launch demo modal
       </button>
+      <button type="button" class="btn btn-primary" id="btn7" data-bs-toggle="modal" data-bs-target="#exampleModal6">
+        Launch demo modal
+      </button>
+      <button type="button" class="btn btn-primary" id="btn8" data-bs-toggle="modal" data-bs-target="#exampleModal7">
+        Launch demo modal
+      </button>
     </div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -468,12 +474,14 @@ $total_reserved_properties_byloggedinuser = $data['total'];
         <tbody>
 
         <?php 
+        $total_price_Available = 0;
             $sql = "SELECT p.* , p1.Title FROM properties p join projects p1 on p.project_id = p1.id where p.status1 = 'Available'";
             $result = $conn->query($sql);
 
             if ($result->num_rows > 0) {
               // output data of each row
               while($row = $result->fetch_assoc()) {
+                $total_price_Available = $total_price_Available + intval($row['price']);
                 ?>
           <tr>
             <td><?php echo $row['idbyadmin']; ?></td>
@@ -493,6 +501,22 @@ $total_reserved_properties_byloggedinuser = $data['total'];
           </tr>
                 <?php
               }
+              ?>
+              <tr>
+              <td></td>
+            <td></td>
+            <td><?php echo "$".number_format($total_price_Available); ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              </tr>
+              <?php
             }
         ?>
         </tbody>
@@ -535,12 +559,14 @@ $total_reserved_properties_byloggedinuser = $data['total'];
         <tbody>
 
         <?php 
+        $total_price_held = 0;
             $sql = "SELECT p.* , p1.Title FROM properties p join projects p1 on p.project_id = p1.id where p.status1 = 'Held'";
             $result = $conn->query($sql);
 
             if ($result->num_rows > 0) {
               // output data of each row
               while($row = $result->fetch_assoc()) {
+                $total_price_held = $total_price_held + intval($row['price']);
                 ?>
           <tr>
             <td><?php echo $row['idbyadmin']; ?></td>
@@ -557,8 +583,23 @@ $total_reserved_properties_byloggedinuser = $data['total'];
             <td><?php echo $row['status1']; ?></td>
             <!-- <td></td> -->
           </tr>
-                <?php
-              }
+          <?php
+              }?>
+              <tr>
+              <td></td>
+            <td></td>
+            <td><?php echo "$".number_format($total_price_held); ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              </tr>
+              <?php
             }
         ?>
         </tbody>
@@ -638,10 +679,30 @@ $total_reserved_properties_byloggedinuser = $data['total'];
                   <?php
                 }
               }
-            ?>
-          </tr>
+              else{
+                ?>
+                            <td><?php echo $email1; ?></td>
                 <?php
               }
+            ?>
+          </tr>
+          <?php
+              }?>
+              <tr>
+              <td></td>
+            <td></td>
+            <td><?php echo "$".number_format(intval($totalpriceforsold)); ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              </tr>
+              <?php
             }
         ?>
         </tbody>
@@ -706,8 +767,23 @@ $total_reserved_properties_byloggedinuser = $data['total'];
             <td><?php echo $row['status1']; ?></td>
             <!-- <td></td> -->
           </tr>
-                <?php
-              }
+          <?php
+              }?>
+              <tr>
+              <td></td>
+            <td></td>
+            <td><?php echo "$".number_format(intval($totalpriceforcontracted)); ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              </tr>
+              <?php
             }
         ?>
         </tbody>
@@ -772,8 +848,23 @@ $total_reserved_properties_byloggedinuser = $data['total'];
             <td><?php echo $row['status1']; ?></td>
             <!-- <td></td> -->
           </tr>
-                <?php
-              }
+          <?php
+              }?>
+              <tr>
+              <td></td>
+            <td></td>
+            <td><?php echo "$".number_format(intval($totalpriceforsettled)); ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              </tr>
+              <?php
             }
         ?>
         </tbody>
@@ -854,8 +945,227 @@ $total_reserved_properties_byloggedinuser = $data['total'];
             ?>
             <!-- <td></td> -->
           </tr>
-                <?php
+          <?php
+              }?>
+              <tr>
+              <td></td>
+            <td></td>
+            <td><?php echo "$".number_format(intval($totalpriceforreserved)); ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              </tr>
+              <?php
+            }
+        ?>
+        </tbody>
+      </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="exampleModal6" tabindex="-1" aria-labelledby="exampleModalLabel6" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel6"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body " style="overflow-x: auto;">
+      <table class="table text-nowrap custom-table text-nowrap">
+        <thead class="text-uppercase">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Project</th>
+            <th scope="col">Price</th>
+            <th scope="col">Beds</th>
+            <th scope="col">Baths</th>
+            <th scope="col">Cars</th>
+            <th scope="col">Car Lots</th>
+            <th scope="col">Storage Lots</th>
+            <th scope="col">Level</th>
+            <th scope="col">Aspect</th>
+            <th scope="col">Total Area</th>
+            <th scope="col">Status</th>
+            <th scope="col">Reserved By</th>
+            <!-- <th scope="col"></th> -->
+          </tr>
+        </thead>
+        <tbody>
+
+        <?php 
+            $reservedbymyprice = 0;
+            $sql = "SELECT p.*, r.*,p1.Title  FROM properties p  join property_reserved_by r on r.property_id = p.id join projects p1 on p.project_id = p1.id where p.status1 = 'Reserved' and r.reserved_by = '$employee_username'";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+              // output data of each row
+              while($row = $result->fetch_assoc()) {
+                $email1 = $row['reserved_by'];
+                $reservedbymyprice = $reservedbymyprice + intval($row['price']);
+                ?>
+          <tr>
+            <td><?php echo $row['idbyadmin']; ?></td>
+            <td><?php echo $row['Title']; ?></td>
+            <td><?php echo "$".number_format(intval($row['price'])); ?></td>
+            <td><?php echo $row['Beds']; ?></td>
+            <td><?php echo $row['Baths']; ?></td>
+            <td><?php echo $row['Cars']; ?></td>
+            <td><?php echo $row['Car_lots']; ?></td>
+            <td><?php echo $row['Storage_lots']; ?></td>
+            <td><?php echo $row['level1']; ?></td>
+            <td><?php echo $row['aspect']; ?></td>
+            <td><?php echo $row['totalarea']; ?></td>
+            <td><?php echo $row['status1']; ?></td>
+            <?php
+              $sql433 = "SELECT * FROM users where email1 = '$email1'";
+              $result433 = $conn->query($sql433);
+
+              if ($result433->num_rows > 0) {
+                // output data of each row
+                while($row433 = $result433->fetch_assoc()) {
+                  $first_name1 = $row433['firstname'];
+                  $lastnaem = $row433['lastname'];
+                  ?>
+            <td><?php echo $first_name1." ".$lastnaem; ?></td>
+                  <?php
+                }
               }
+            ?>
+            <!-- <td></td> -->
+          </tr>
+          <?php
+              }?>
+              <tr>
+              <td></td>
+            <td></td>
+            <td><?php echo "$".number_format($reservedbymyprice); ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              </tr>
+              <?php
+            }
+        ?>
+        </tbody>
+      </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exampleModal7" tabindex="-1" aria-labelledby="exampleModalLabel7" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel7"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body " style="overflow-x: auto;">
+      <table class="table text-nowrap custom-table text-nowrap">
+        <thead class="text-uppercase">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Project</th>
+            <th scope="col">Price</th>
+            <th scope="col">Beds</th>
+            <th scope="col">Baths</th>
+            <th scope="col">Cars</th>
+            <th scope="col">Car Lots</th>
+            <th scope="col">Storage Lots</th>
+            <th scope="col">Level</th>
+            <th scope="col">Aspect</th>
+            <th scope="col">Total Area</th>
+            <th scope="col">Status</th>
+            <th scope="col">Sold By</th>
+            <!-- <th scope="col"></th> -->
+          </tr>
+        </thead>
+        <tbody>
+
+        <?php 
+        $soldbymyprice = 0;
+            $sql = "SELECT p.*, r.*,p1.Title  FROM properties p  join property_sold_by r on r.property_id = p.id join projects p1 on p.project_id = p1.id where p.status1 = 'Sold' and r.sold_by = '$employee_username'";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+              // output data of each row
+              while($row = $result->fetch_assoc()) {
+                $email1 = $row['sold_by'];
+                $soldbymyprice = $soldbymyprice + intval($row['price']);
+                ?>
+          <tr>
+            <td><?php echo $row['idbyadmin']; ?></td>
+            <td><?php echo $row['Title']; ?></td>
+            <td><?php echo "$".number_format(intval($row['price'])); ?></td>
+            <td><?php echo $row['Beds']; ?></td>
+            <td><?php echo $row['Baths']; ?></td>
+            <td><?php echo $row['Cars']; ?></td>
+            <td><?php echo $row['Car_lots']; ?></td>
+            <td><?php echo $row['Storage_lots']; ?></td>
+            <td><?php echo $row['level1']; ?></td>
+            <td><?php echo $row['aspect']; ?></td>
+            <td><?php echo $row['totalarea']; ?></td>
+            <td><?php echo $row['status1']; ?></td>
+            <?php
+              $sql433 = "SELECT * FROM users where email1 = '$email1'";
+              $result433 = $conn->query($sql433);
+
+              if ($result433->num_rows > 0) {
+                // output data of each row
+                while($row433 = $result433->fetch_assoc()) {
+                  $first_name1 = $row433['firstname'];
+                  $lastnaem = $row433['lastname'];
+                  ?>
+            <td><?php echo $first_name1." ".$lastnaem; ?></td>
+                  <?php
+                }
+              }
+              else{
+                echo $email;
+              }
+            ?>
+            <!-- <td></td> -->
+          </tr>
+          <?php
+              }?>
+              <tr>
+              <td></td>
+            <td></td>
+            <td><?php echo "$".number_format($soldbymyprice); ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              </tr>
+              <?php
             }
         ?>
         </tbody>
@@ -896,6 +1206,12 @@ $total_reserved_properties_byloggedinuser = $data['total'];
       document.querySelector('#btn6').click();
     // code block
     break;
+    case "Reservedbyme":
+      document.querySelector('#btn7').click();
+      break;
+    case "soldbyme":
+      document.querySelector('#btn8').click();
+      break;
   default:
     // code block
 }

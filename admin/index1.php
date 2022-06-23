@@ -7,17 +7,39 @@ $result502 = $conn->query($sql502);
 echo "<script>
 var numberofpropertybyagent = [];
 var reserved_by = [];
+var reserved_by_names = [];
+var sumeduppricereserved = [];
 </script>";
 if ($result502->num_rows > 0) {
   // output data of each row
   while($row502 = $result502->fetch_assoc()){
     $numberofpropertybyagent = $row502['numberofpropertybyagent'];
     $reserved_by = $row502['reserved_by'];
+    $sql5322 = "SELECT sum(p.price) as sumedprice FROM properties p inner join property_reserved_by r on r.property_id = p.id where  reserved_by = '$reserved_by'";
+    $result5322 = $conn->query($sql5322);
+    
+    if ($result5322->num_rows > 0) {
+      // output data of each row
+      $row5322 = $result5322->fetch_assoc();
+        $sumeduppricereserved = $row5322['sumedprice'];
+      }
+      $sql0987800 = "SELECT firstname, lastname FROM users where email1 = '$reserved_by'";
+      $result0987800 = $conn->query($sql0987800);
+
+      if ($result0987800->num_rows > 0) {
+        // output data of each row
+        while($row0987800 = $result0987800->fetch_assoc()) {
+          $firstname = $row0987800['firstname'];
+          $lastname = $row0987800['lastname'];
+        }
+      }
     echo '<script>
     numberofpropertybyagent.push("'.$numberofpropertybyagent.'");
     reserved_by.push("'.$reserved_by.'");
-    </script>';
+    sumeduppricereserved.push("'.$sumeduppricereserved.'");
+    reserved_by_names.push("'.$firstname.' '.$lastname.'");
     
+    </script>';
   }
 }
 
@@ -49,17 +71,30 @@ $result522 = $conn->query($sql522);
 echo "<script>
     var cancelledinjavascript = [];
     var cancelledby = [];
+    var cancelled_by_names = [];
 </script>";
 if ($result522->num_rows > 0) {
   // output data of each row
   while($row522 = $result522->fetch_assoc()){
     $number_of_cancelled = $row522['caneleed'];
     $cancelledby = $row522['emplyeename'];
+    $sql09878001 = "SELECT firstname, lastname FROM users where email1 = '$cancelledby'";
+    $result09878001 = $conn->query($sql09878001);
+
+    if ($result09878001->num_rows > 0) {
+      // output data of each row
+      while($row09878001 = $result09878001->fetch_assoc()) {
+        $firstname1 = $row09878001['firstname'];
+        $lastname1 = $row09878001['lastname'];
+      }
+    }
     // echo "<script>alert('".$number_of_cancelled."')</script>";
     // echo "<script>alert('".$cancelledby."')</script>";
     echo "<script>
     cancelledinjavascript.push('".$number_of_cancelled."');
     cancelledby.push('".$cancelledby."');
+    cancelled_by_names.push('".$firstname1." ".$lastname1."');
+    
     </script>";
   }
 }
@@ -71,19 +106,42 @@ $result5221 = $conn->query($sql5221);
 echo "<script>
     var soldinjavascript = [];
     var soldby = [];
+    var sumeduppricesold = [];
+    var soldbyname = [];
 </script>";
 if ($result5221->num_rows > 0) {
   // output data of each row
   while($row5221 = $result5221->fetch_assoc()){
     $number_of_sold = $row5221['solda'];
     $soldby = $row5221['sold_by'];
-    // echo "<script>alert('".$number_of_cancelled."')</script>";
-    // echo "<script>alert('".$cancelledby."')</script>";
+    $sql09878 = "SELECT firstname, lastname FROM users where email1 = '$soldby'";
+    $result09878 = $conn->query($sql09878);
+
+    if ($result09878->num_rows > 0) {
+      // output data of each row
+      while($row09878 = $result09878->fetch_assoc()) {
+        $firstname2 = $row09878['firstname'];
+        $lastname2 = $row09878['lastname'];
+      }
+    }
+
+    $sql53221 = "SELECT sum(p.price) as sumedprice1 FROM properties p inner join property_sold_by r on r.property_id = p.id where  sold_by = '$soldby'";
+    $result53221 = $conn->query($sql53221);
+    
+    if ($result53221->num_rows > 0) {
+      // output data of each row
+      $row53221 = $result53221->fetch_assoc();
+        $sumeduppricesold = $row53221['sumedprice1'];
+        // echo "<script>console.log('".$sumeduppricesold."')</script>";
+      }
     echo "<script>
     soldinjavascript.push('".$number_of_sold."');
     soldby.push('".$soldby."');
+    sumeduppricesold.push('".$sumeduppricesold."');
+    soldbyname.push('".$firstname2." ".$lastname2."');
     </script>";
   }
+  
 }
 ?>
     <script
@@ -91,15 +149,17 @@ if ($result5221->num_rows > 0) {
       src="https://www.gstatic.com/charts/loader.js"
     ></script>
     <script type="text/javascript">
+      // console.log(sumeduppricesold);
+      // alert(soldby);
       yourNumber = parseInt("33B2DF", 16);
       // console.log(yourNumber);
       // console.log(hexString);
-      var twodarray = [["Agent", "Reserved", { role: "style" }]];
+      var twodarray = [["Agent", "Reserveda", { role: "style" }, {type: 'string', role: 'tooltip', 'p': {'html': true}}]];
       for(i = 0; i < numberofpropertybyagent.length; i++){
         yourNumber+= 111111;
       // console.log(yourNumber);
         hexString = yourNumber.toString(16);
-        twodarray.push([reserved_by[i],parseInt(numberofpropertybyagent[i]),hexString]); 
+        twodarray.push([reserved_by_names[i],parseInt(numberofpropertybyagent[i]), hexString, "<div class='p-2 fs-15'>"+reserved_by_names[i]+"<br>Reserved: "+parseInt(numberofpropertybyagent[i])+"<br>GR: "+ sumeduppricereserved[i]+"</div>"]); 
         // console.log(twodarray);
       }
 
@@ -120,15 +180,19 @@ var smallest = sorted[0],
       // alert(twodarray);
 
       function drawChart() {
-        var data = google.visualization.arrayToDataTable(
+        var data = new google.visualization.arrayToDataTable(
           twodarray
-          
           // ["George Street", 10, "#33B2DF"],
           // ["Silver", 8, "#546E7A"],
           // ["Gold", 3, "#D4526E"],
           // ["Platinum", 2, "color: #13D8AA"],
         );
-
+        // data.addRows([
+        //   twodarray
+        //   // twodarray
+        // ]);
+        // data.addColumn();
+        // data.addColumn('number', 'GR');
         var view = new google.visualization.DataView(data);
         view.setColumns([
           0,
@@ -140,6 +204,7 @@ var smallest = sorted[0],
           },
           1,
           2,
+          3,
         ]);
 
         var options = {
@@ -152,6 +217,7 @@ var smallest = sorted[0],
             labeledValueText: "both",
             textStyle: { color: "black", fontSize: 15, fontName: "Poppins" },
           },
+          tooltip: {isHtml: true},
           hAxis: {
             minValue: smallest,
             maxValue: largest,
@@ -182,7 +248,7 @@ var smallest = sorted[0],
       // console.log(yourNumber);
         hexString1 = yourNumber1.toString(16);
         // hexString1 = "green";
-        twodarray1.push([cancelledby[i],parseInt(cancelledinjavascript[i]),hexString1]); 
+        twodarray1.push([cancelled_by_names[i],parseInt(cancelledinjavascript[i]),hexString1]); 
         // console.log(twodarray);
       }
 
@@ -247,12 +313,12 @@ var smallest = sorted[0],
       yourNumber12 = parseInt("000000", 16);
       // console.log(yourNumber);
       // console.log(hexString);
-      var twodarray12 = [["Agent", "Sold", { role: "style" }]];
+      var twodarray12 = [["Agent", "Sold", { role: "style" }, {type: 'string', role: 'tooltip', 'p': {'html': true}}]];
       for(i = 0; i < soldinjavascript.length; i++){
         yourNumber12+= 1111;
       // console.log(yourNumber);
         hexString12 = yourNumber12.toString(16);
-        twodarray12.push([soldby[i],parseInt(soldinjavascript[i]),hexString12]); 
+        twodarray12.push([soldbyname[i],parseInt(soldinjavascript[i]),hexString12, "<div class='p-2 fs-15'>"+soldbyname[i]+"<br>Sold: "+parseInt(soldinjavascript[i])+"<br>GR: "+ sumeduppricesold[i]+"</div>"]); 
         // console.log(twodarray);
       }
 
@@ -288,6 +354,7 @@ var smallest = sorted[0],
           },
           1,
           2,
+          3,
         ]);
         var options12 = {
           title: "Sold",
@@ -299,6 +366,7 @@ var smallest = sorted[0],
             labeledValueText: "both",
             textStyle: { color: "black", fontSize: 15, fontName: "Poppins" },
           },
+          tooltip: {isHtml: true},
           hAxis: {
             minValue: smallest12,
             maxValue: largest12,

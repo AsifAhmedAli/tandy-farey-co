@@ -371,13 +371,13 @@ $totalpriceforsold = $data['ojsd'];
     </div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl">
+      <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close py-0" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body " style="overflow-x: auto;">
+      <div class="modal-body mt-3 " style="overflow-x: auto;padding-top:0px;">
       <table class="table text-nowrap custom-table text-nowrap">
         <thead class="text-uppercase">
           <tr>
@@ -397,15 +397,17 @@ $totalpriceforsold = $data['ojsd'];
             <!-- <th scope="col"></th> -->
           </tr>
         </thead>
-        <tbody>
 
+        <tbody>
         <?php 
+        $total_price_Available = 0;
             $sql = "SELECT p.* , p1.Title FROM properties p join projects p1 on p.project_id = p1.id where p.status1 = 'Available'";
             $result = $conn->query($sql);
 
             if ($result->num_rows > 0) {
               // output data of each row
               while($row = $result->fetch_assoc()) {
+                $total_price_Available = $total_price_Available + intval($row['price']);
                 ?>
           <tr>
             <td><?php echo $row['idbyadmin']; ?></td>
@@ -424,7 +426,22 @@ $totalpriceforsold = $data['ojsd'];
             <!-- <td></td> -->
           </tr>
                 <?php
-              }
+              }?>
+              <tr>
+              <td></td>
+                <td></td>
+                <td><?php echo "$".number_format($total_price_Available); ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <?php
             }
         ?>
         </tbody>
@@ -442,9 +459,9 @@ $totalpriceforsold = $data['ojsd'];
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel1"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close py-0" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body " style="overflow-x: auto;">
+      <div class="modal-body mt-3 " style="overflow-x: auto;padding-top:0px;">
       <table class="table text-nowrap custom-table text-nowrap">
         <thead class="text-uppercase">
           <tr>
@@ -467,12 +484,14 @@ $totalpriceforsold = $data['ojsd'];
         <tbody>
 
         <?php 
+        $total_price_held = 0;
             $sql = "SELECT p.* , p1.Title FROM properties p join projects p1 on p.project_id = p1.id where p.status1 = 'Held'";
             $result = $conn->query($sql);
 
             if ($result->num_rows > 0) {
               // output data of each row
               while($row = $result->fetch_assoc()) {
+                $total_price_held = $total_price_held + intval($row['price']);
                 ?>
           <tr>
             <td><?php echo $row['idbyadmin']; ?></td>
@@ -489,8 +508,23 @@ $totalpriceforsold = $data['ojsd'];
             <td><?php echo $row['status1']; ?></td>
             <!-- <td></td> -->
           </tr>
-                <?php
-              }
+          <?php
+              }?>
+              <tr>
+              <td></td>
+            <td></td>
+            <td><?php echo "$".number_format($total_price_held); ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              </tr>
+              <?php
             }
         ?>
         </tbody>
@@ -508,9 +542,9 @@ $totalpriceforsold = $data['ojsd'];
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel2"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close py-0" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body " style="overflow-x: auto;">
+      <div class="modal-body mt-3 " style="overflow-x: auto;padding-top:0px;">
       <table class="table text-nowrap custom-table text-nowrap">
         <thead class="text-uppercase">
           <tr>
@@ -527,50 +561,76 @@ $totalpriceforsold = $data['ojsd'];
             <th scope="col">Total Area</th>
             <th scope="col">Status</th>
             <th scope="col">Sold By</th>
-            <!-- <th scope="col">Agents</th> -->
+            <th scope="col"></th>
             <!-- <th scope="col"></th> -->
           </tr>
         </thead>
-        <tbody>
+        <tr>
+                <td></td>
+                <td>
+                <select id="selectprojectname" class="form-select" aria-label="Default select example">
 
+                <option selected disabled>Project Title</option>
+                  <?php
+                    $sql = "SELECT id,Title FROM projects";
+                    $result = $conn->query($sql);
+                    
+                    if ($result->num_rows > 0) {
+                      // output data of each row
+                      while($row = $result->fetch_assoc()) {
+                        ?>
+                        <option value="<?php echo $row['id']; ?>"><?php echo $row['Title']; ?></option>
+                        <?php
+                      }
+                    }
+                  ?>
+                  </select>
+
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>                
+                  <select id="selectagentname" class="form-select">
+
+                    <option selected disabled>Agent Name</option>
+                      <?php
+                        $sql = "SELECT email1, firstname FROM users";
+                        $result = $conn->query($sql);
+                        
+                        if ($result->num_rows > 0) {
+                          // output data of each row
+                          while($row = $result->fetch_assoc()) {
+                            ?>
+                            <option value="<?php echo $row['email1']; ?>"><?php echo $row['firstname']; ?></option>
+                            <?php
+                          }
+                        }
+                      ?>
+                  </select>
+                </td>
+                <td><button onclick="fetchfilterApiCall()" class="btn btn-primary btn-sm">Apply</button></td>
+      </tr>
+        <tbody id="filterresponse">
         <?php 
-            $sql = "SELECT *  FROM properties where status1 = 'Sold'";
+            $sql = "SELECT p.*, r.*, p1.Title  FROM properties p  join property_sold_by r on r.property_id = p.id join projects p1 on p.project_id = p1.id where p.status1 = 'Sold'";
             $result = $conn->query($sql);
 
             if ($result->num_rows > 0) {
               // output data of each row
               while($row = $result->fetch_assoc()) {
-                  $pid = $row['project_id'];
-                  $pid1 = $row['id'];
-                //   echo "<script>console.log('".$pid1."')</script>";
-                //   echo "<script>console.log('".$pid."')</script>";
-                
-                $sql32 = "SELECT Title FROM projects where id = '$pid'";
-                    $result32 = $conn->query($sql32);
-                    
-                    if ($result32->num_rows > 0) {
-                      // output data of each row
-                      while($row32 = $result32->fetch_assoc()) {
-                          $projecttitle = $row32['Title'];
-                      }
-                    }
-                $sql321 = "SELECT * FROM property_sold_by where property_id = '$pid1'";
-                    $result321 = $conn->query($sql321);
-                    
-                    if ($result321->num_rows > 0) {
-                      // output data of each row
-                      while($row321 = $result321->fetch_assoc()) {
-                          $email1 = $row321['sold_by'];
-                      }
-                    }
-                    else{
-                        $email1 = "";
-                    }
-                    
+                $email1 = $row['sold_by'];
                 ?>
           <tr>
             <td><?php echo $row['idbyadmin']; ?></td>
-            <td><?php echo $projecttitle; ?></td>
+            <td><?php echo $row['Title']; ?></td>
             <td><?php echo "$".number_format(intval($row['price'])); ?></td>
             <td><?php echo $row['Beds']; ?></td>
             <td><?php echo $row['Baths']; ?></td>
@@ -581,7 +641,7 @@ $totalpriceforsold = $data['ojsd'];
             <td><?php echo $row['aspect']; ?></td>
             <td><?php echo $row['totalarea']; ?></td>
             <td><?php echo $row['status1']; ?></td>
-            <!-- <td></td> -->
+            
             <?php
               $sql433 = "SELECT * FROM users where email1 = '$email1'";
               $result433 = $conn->query($sql433);
@@ -596,10 +656,31 @@ $totalpriceforsold = $data['ojsd'];
                   <?php
                 }
               }
-            ?>
-          </tr>
+              else{
+                ?>
+                            <td><?php echo $email1; ?></td>
                 <?php
               }
+            ?>
+            <td></td>
+          </tr>
+          <?php
+              }?>
+              <tr>
+              <td></td>
+            <td></td>
+            <td><?php echo "$".number_format(intval($totalpriceforsold)); ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              </tr>
+              <?php
             }
         ?>
         </tbody>
@@ -617,9 +698,9 @@ $totalpriceforsold = $data['ojsd'];
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel3"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close py-0" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body " style="overflow-x: auto;">
+      <div class="modal-body mt-3 " style="overflow-x: auto;padding-top:0px;">
       <table class="table text-nowrap custom-table text-nowrap">
         <thead class="text-uppercase">
           <tr>
@@ -664,8 +745,23 @@ $totalpriceforsold = $data['ojsd'];
             <td><?php echo $row['status1']; ?></td>
             <!-- <td></td> -->
           </tr>
-                <?php
-              }
+          <?php
+              }?>
+              <tr>
+              <td></td>
+            <td></td>
+            <td><?php echo "$".number_format(intval($totalpriceforcontracted)); ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              </tr>
+              <?php
             }
         ?>
         </tbody>
@@ -683,9 +779,9 @@ $totalpriceforsold = $data['ojsd'];
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel4"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close py-0" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body " style="overflow-x: auto;">
+      <div class="modal-body mt-3 " style="overflow-x: auto;padding-top:0px;">
       <table class="table text-nowrap custom-table text-nowrap">
         <thead class="text-uppercase">
           <tr>
@@ -730,8 +826,23 @@ $totalpriceforsold = $data['ojsd'];
             <td><?php echo $row['status1']; ?></td>
             <!-- <td></td> -->
           </tr>
-                <?php
-              }
+          <?php
+              }?>
+              <tr>
+              <td></td>
+            <td></td>
+            <td><?php echo "$".number_format(intval($totalpriceforsettled)); ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              </tr>
+              <?php
             }
         ?>
         </tbody>
@@ -749,9 +860,9 @@ $totalpriceforsold = $data['ojsd'];
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel5"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close py-0" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body " style="overflow-x: auto;">
+      <div class="modal-body mt-3 " style="overflow-x: auto;padding-top:0px;">
       <table class="table text-nowrap custom-table text-nowrap">
         <thead class="text-uppercase">
           <tr>
@@ -771,7 +882,60 @@ $totalpriceforsold = $data['ojsd'];
             <!-- <th scope="col"></th> -->
           </tr>
         </thead>
-        <tbody>
+        <tr>
+                <td></td>
+                <td>
+                <select id="selectprojectname1" class="form-select" aria-label="Default select example">
+
+                <option selected disabled>Project Title</option>
+                  <?php
+                    $sql = "SELECT id,Title FROM projects";
+                    $result = $conn->query($sql);
+                    
+                    if ($result->num_rows > 0) {
+                      // output data of each row
+                      while($row = $result->fetch_assoc()) {
+                        ?>
+                        <option value="<?php echo $row['id']; ?>"><?php echo $row['Title']; ?></option>
+                        <?php
+                      }
+                    }
+                  ?>
+                  </select>
+
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>                
+                  <select id="selectagentname1" class="form-select">
+
+                    <option selected disabled>Agent Name</option>
+                      <?php
+                        $sql = "SELECT email1, firstname FROM users";
+                        $result = $conn->query($sql);
+                        
+                        if ($result->num_rows > 0) {
+                          // output data of each row
+                          while($row = $result->fetch_assoc()) {
+                            ?>
+                            <option value="<?php echo $row['email1']; ?>"><?php echo $row['firstname']; ?></option>
+                            <?php
+                          }
+                        }
+                      ?>
+                  </select>
+                </td>
+                <td><button onclick="fetchfilterApiCall1()" class="btn btn-primary btn-sm">Apply</button></td>
+      </tr>
+        <tbody id="filterreserved">
 
         <?php 
             $sql = "SELECT *  FROM properties where status1 = 'Reserved'";
@@ -837,8 +1001,23 @@ $totalpriceforsold = $data['ojsd'];
             ?>
             <!-- <td></td> -->
           </tr>
-                <?php
-              }
+          <?php
+              }?>
+              <tr>
+              <td></td>
+            <td></td>
+            <td><?php echo "$".number_format(intval($totalpriceforreserved)); ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+              </tr>
+              <?php
             }
         ?>
         </tbody>
@@ -850,6 +1029,9 @@ $totalpriceforsold = $data['ojsd'];
     </div>
   </div>
 </div>
+
+<div class="loading" id="loader1" style="visibility: hidden;">Loading&#8230;</div>
+
 <script>
   function myfunction(x){
     // alert(x);
@@ -881,6 +1063,43 @@ $totalpriceforsold = $data['ojsd'];
   default:
     // code block
 }
+  }
+
+  function fetchfilterApiCall1(){
+    // var x51 = parseInt(x50);
+    var x53 = document.getElementById("selectprojectname1").value;
+    var x54 = document.getElementById("selectagentname1").value;
+    document.getElementById("loader1").style.visibility = "visible";
+    // console.log(x51);
+    // console.log(x52);
+    $.ajax({
+            type: "post",
+            data: {x53 : x53, x54: x54},
+            url: "controllers.php",
+            success: function (result) {
+                $("#filterreserved").html(result);
+                document.getElementById("loader1").style.visibility = "hidden";
+            }
+            });
+  }
+
+
+  function fetchfilterApiCall(){
+    // var x51 = parseInt(x50);
+    var x51 = document.getElementById("selectprojectname").value;
+    var x52 = document.getElementById("selectagentname").value;
+    document.getElementById("loader1").style.visibility = "visible";
+    // console.log(x51);
+    // console.log(x52);
+    $.ajax({
+            type: "post",
+            data: {x52 : x52, x51: x51},
+            url: "controllers.php",
+            success: function (result) {
+                $("#filterresponse").html(result);
+                document.getElementById("loader1").style.visibility = "hidden";
+            }
+            });
   }
 </script>
     <script

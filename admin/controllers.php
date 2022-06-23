@@ -3,7 +3,9 @@ include("./db.php");
 include("./email_templates/email_settings.php");
 session_start();
 $username = $_SESSION['employee_username'];
-
+$ifcondition = 0;
+$maxsize    = 2097152;
+$errors     = array();
 
 //add new agent
 if(isset($_POST['addagent'])){
@@ -385,14 +387,16 @@ if(isset($_POST['imagesuploadform'])){
       $file_tmp=$_FILES["files"]["tmp_name"][$key];
       $ext=pathinfo($file_name,PATHINFO_EXTENSION);
       // echo $file_name;
-      if(in_array($ext,$extension)) {
+      if($_FILES['files']['size'][$key] >= $maxsize) {
+        $errors[] = 'File too large. File must be less than 2 megabytes.';
+      }
+      if(in_array($ext,$extension) && count($errors) === 0) {
           if(!file_exists("../../photo_gallery/".$file_name)) {
             $file_name = str_replace("'", '', $file_name);
             // echo "<script>alert('".$file_name."')</script>";
               if(move_uploaded_file($file_tmp=$_FILES["files"]["tmp_name"][$key],"../../photo_gallery/".$file_name)){
                 $sql = "INSERT INTO project_documents (document_name, project_id, file_type, thumbnail)
                 VALUES ('$file_name', '$id', 'image' ,'no')";
-
                 if ($conn->query($sql) === TRUE) {
                   $countercheck++;
                 }
@@ -405,8 +409,8 @@ if(isset($_POST['imagesuploadform'])){
               $filename=$filename.time().".".$ext;
               
               $newFileName = str_replace(' ', '', $filename);
-            $newFileName = str_replace("'", '', $newFileName);
-            // echo "<script>alert('".$newFileName."')</script>";
+              $newFileName = str_replace("'", '', $newFileName);
+              // echo "<script>alert('".$newFileName."')</script>";
               // echo $newFileName;
               if(move_uploaded_file($file_tmp=$_FILES["files"]["tmp_name"][$key],"../../photo_gallery/".$newFileName)){
                 // echo "File uploaded with time function";
@@ -427,7 +431,7 @@ if(isset($_POST['imagesuploadform'])){
         echo "<script>
         Swal.fire(
             'Oops...',
-            'This is not an image file!',
+            'This is not an image file or files size is too large!',
             'error'
           )
         </script>";
@@ -1069,6 +1073,7 @@ if(isset($_POST['property_idqw'])){
     $idofproejctdsfop = $_POST['project_idqw'];
       $status1 = $_POST[ 'status'];
       $idofproperty = $_POST['property_idqw'];
+      $reservecheck = 0;
     //   echo "<script>alert('".$idofproperty."')</script>";
   $etsdf = 0;
   $sql45 = "SELECT * FROM property_reserved_by WHERE property_id='$idofproperty'";
@@ -1077,28 +1082,30 @@ if(isset($_POST['property_idqw'])){
   // output data of each row
   while($row45 = $result45->fetch_assoc()) {
   $soldby = $row45['reserved_by'];
+  $buyername = $row45['buyername'];
+  $reservecheck = 1;
     }
   }
-  else{
-    $etsdf++;
-    if($status1 != "Reserved"){
-        $sql = "UPDATE properties SET status1='$status1' where id = '$idofproperty'";
+  // else{
+  //   $etsdf++;
+  //   if($status1 != "Reserved"){
+  //       $sql = "UPDATE properties SET status1='$status1' where id = '$idofproperty'";
 
-    if ($conn->query($sql) === TRUE) {
-            echo "<script>
-              Swal.fire({
-                icon: 'success',
-                title: 'Done...',
-                text: 'Property has been updated successfully!',
-                allowOutsideClick: false
-              })
-              $( 'button.swal2-confirm' ).click(function() {
-                location.reload();
-              });
-              </script>";
-    }
-    }
-  }
+  //   if ($conn->query($sql) === TRUE) {
+  //           echo "<script>
+  //             Swal.fire({
+  //               icon: 'success',
+  //               title: 'Done...',
+  //               text: 'Property has been updated successfully!',
+  //               allowOutsideClick: false
+  //             })
+  //             $( 'button.swal2-confirm' ).click(function() {
+  //               location.reload();
+  //             });
+  //             </script>";
+  //   }
+  //   }
+  // }
   if($status1 == "Reserved"){
   $etsdf++;
     if ($result45->num_rows > 0) {
@@ -1116,7 +1123,7 @@ if(isset($_POST['property_idqw'])){
     </script>";
     }
     else{
-        echo "<script>window.location.replace('https://fareyandco.com/admin/options.php?id=".$idofproejctdsfop."&propertyid=".$idofproperty."');</script>";
+        echo "<script>window.location.replace('./options.php?id=".$idofproejctdsfop."&propertyid=".$idofproperty."');</script>";
     }
     }
     
@@ -1140,25 +1147,31 @@ if(isset($_POST['property_idqw'])){
 
     if ($conn->query($sql) === TRUE) {
       if($status1 == "Sold"){
-            $sql21 = "INSERT INTO property_sold_by (sold_by, property_id)
-            VALUES ('$soldby', '$idofproperty')";
-    
-            if ($conn->query($sql21) === TRUE) {
-              $sql = "DELETE FROM property_reserved_by WHERE property_id='$idofproperty'";
-              if ($conn->query($sql) === TRUE) {
-              }
-              echo "<script>
-              Swal.fire({
-                icon: 'success',
-                title: 'Done...',
-                text: 'Property has been updated successfully (Sold)!',
-                allowOutsideClick: false
-              })
-              $( 'button.swal2-confirm' ).click(function() {
-                location.reload();
-              });
-              </script>";
+        if($reservecheck == 1){
+          $sql21 = "INSERT INTO property_sold_by (sold_by, property_id, buyer_name)
+          VALUES ('$soldby', '$idofproperty', '$buyername')";
+  
+          if ($conn->query($sql21) === TRUE) {
+            $sql = "DELETE FROM property_reserved_by WHERE property_id='$idofproperty'";
+            if ($conn->query($sql) === TRUE) {
+            }
+            echo "<script>
+            Swal.fire({
+              icon: 'success',
+              title: 'Done...',
+              text: 'Property has been updated successfully (Sold)!',
+              allowOutsideClick: false
+            })
+            $( 'button.swal2-confirm' ).click(function() {
+              location.reload();
+            });
+            </script>";
+      }          
         }
+        else{
+          include("./buyername_modal_when_selling.php");
+        }
+
     }
       elseif($status1 == "Available"){
         $sql = "DELETE FROM property_reserved_by WHERE property_id='$idofproperty'";
@@ -1558,7 +1571,7 @@ if(isset($_POST['x8'])){
                       <td>
                         <h6 class="item-heading">Project Financial Details:</h6>
                         <p class="item-details">
-                        Retail Sales Commission %:
+                        Project Gross Price:
                         <span class="item-details-value ms-1"><?php echo "$".number_format(intval($Retail_Sales_Commission)); ?></span>
                         </p>
                         <p class="item-details">
@@ -1699,7 +1712,10 @@ if(isset($_POST['project_id32'])){
             $file_tmp=$_FILES["files"]["tmp_name"][$key];
             $ext=pathinfo($file_name,PATHINFO_EXTENSION);
             // echo $file_name;
-            if(in_array($ext,$extension)) {
+            if($_FILES['files']['size'][$key] >= $maxsize) {
+              $errors[] = 'File too large. File must be less than 2 megabytes.';
+            }
+            if(in_array($ext,$extension) && count($errors) === 0) {
                 if(!file_exists("../../uploads/".$file_name)) {
                     if(move_uploaded_file($file_tmp=$_FILES["files"]["tmp_name"][$key],"../../uploads/".$file_name)){
                       $sql = "INSERT INTO property_documents (document_name, project_id, property_id)
@@ -1735,7 +1751,7 @@ if(isset($_POST['project_id32'])){
               echo "<script>
               Swal.fire(
                   'Oops...',
-                  'This is not a supported file!',
+                  'This is not a supported file or file size is larger than 2 MB!',
                   'error'
                 )
               </script>";
@@ -1771,11 +1787,33 @@ if(isset($_POST['x13'])){
   if ($result->num_rows > 0) {
     // output data of each row
     while($row = $result->fetch_assoc()) {
+      $imagename = $row['document_name'];
       ?>
-        <div class="col-12 ps-3 text-center py-2 border">
-          <a href="../../uploads/<?php echo $row['document_name']; ?>" target="_blank"><?php echo $row['document_name']; ?></a>
+      <div class="row my-3">
+        <div class="col text-center">
+          <div class="col-12 ps-3 text-center my-1 py-2 border">
+            <a href="../../uploads/<?php echo $imagename ?>" target="_blank"><?php echo $imagename; ?></a>
+          </div>
         </div>
-
+        <div class="col text-center me-3 my-1 border">
+          <button class="btn btn-primary" onclick="deletepropertyimage('<?php echo $imagename; ?>')">
+            Delete
+          </button>
+        </div>
+      </div>
+      <script>
+            function deletepropertyimage(imagenbame){
+                $.ajax({
+                  type: "post",
+                  data: {imagenbame:imagenbame},
+                  url: "controllers.php",
+                  success: function (result) {
+                      $("#div1251q4").html(result);
+                      document.getElementById("loader1").style.visibility = "hidden";
+                  }
+                });
+            }
+      </script>
       <?php
     }
   }
@@ -1798,7 +1836,10 @@ if(isset($_POST['floorplan'])){
       $file_tmp=$_FILES["files"]["tmp_name"][$key];
       $ext=pathinfo($file_name,PATHINFO_EXTENSION);
       // echo $file_name;
-      if(in_array($ext,$extension)) {
+      if($_FILES['files']['size'][$key] >= $maxsize) {
+        $errors[] = 'File too large. File must be less than 2 megabytes.';
+      }
+      if(in_array($ext,$extension) && count($errors) === 0) {
           if(!file_exists("../../photo_gallery/".$file_name)) {
               if(move_uploaded_file($file_tmp=$_FILES["files"]["tmp_name"][$key],"../../photo_gallery/".$file_name)){
                 $sql = "INSERT INTO project_documents (document_name, project_id, file_type, thumbnail)
@@ -1835,7 +1876,7 @@ if(isset($_POST['floorplan'])){
         echo "<script>
         Swal.fire(
             'Oops...',
-            'This is not a supported file!',
+            'This is not a supported file or image size is too large!',
             'error'
           )
         </script>";
@@ -1901,7 +1942,10 @@ if(isset($_POST['floorplates'])){
       $file_tmp=$_FILES["files"]["tmp_name"][$key];
       $ext=pathinfo($file_name,PATHINFO_EXTENSION);
       // echo $file_name;
-      if(in_array($ext,$extension)) {
+      if($_FILES['files']['size'][$key] >= $maxsize) {
+        $errors[] = 'File too large. File must be less than 2 megabytes.';
+      }
+      if(in_array($ext,$extension) && count($errors) === 0) {
           if(!file_exists("../../photo_gallery/".$file_name)) {
               if(move_uploaded_file($file_tmp=$_FILES["files"]["tmp_name"][$key],"../../photo_gallery/".$file_name)){
                 $sql = "INSERT INTO project_documents (document_name, project_id, file_type, thumbnail)
@@ -1938,7 +1982,7 @@ if(isset($_POST['floorplates'])){
         echo "<script>
         Swal.fire(
             'Oops...',
-            'This is not a supported file!',
+            'This is not a supported file or image size is too large!',
             'error'
           )
         </script>";
@@ -2015,7 +2059,10 @@ if(isset($_POST['Brochure'])){
       $file_tmp=$_FILES["files"]["tmp_name"][$key];
       $ext=pathinfo($file_name,PATHINFO_EXTENSION);
       // echo $file_name;
-      if(in_array($ext,$extension)) {
+      if($_FILES['files']['size'][$key] >= $maxsize) {
+        $errors[] = 'File too large. File must be less than 2 megabytes.';
+      }
+      if(in_array($ext,$extension) && count($errors) === 0) {
           if(!file_exists("../../photo_gallery/".$file_name)) {
               if(move_uploaded_file($file_tmp=$_FILES["files"]["tmp_name"][$key],"../../photo_gallery/".$file_name)){
                 $sql = "INSERT INTO project_documents (document_name, project_id, file_type, thumbnail)
@@ -2052,7 +2099,7 @@ if(isset($_POST['Brochure'])){
         echo "<script>
         Swal.fire(
             'Oops...',
-            'This is not a supported file!',
+            'This is not a supported file or image size is too large!',
             'error'
           )
         </script>";
@@ -2117,7 +2164,10 @@ if(isset($_POST['Fixtures'])){
       $file_tmp=$_FILES["files"]["tmp_name"][$key];
       $ext=pathinfo($file_name,PATHINFO_EXTENSION);
       // echo $file_name;
-      if(in_array($ext,$extension)) {
+      if($_FILES['files']['size'][$key] >= $maxsize) {
+        $errors[] = 'File too large. File must be less than 2 megabytes.';
+      }
+      if(in_array($ext,$extension) && count($errors) === 0) {
           if(!file_exists("../../photo_gallery/".$file_name)) {
               if(move_uploaded_file($file_tmp=$_FILES["files"]["tmp_name"][$key],"../../photo_gallery/".$file_name)){
                 $sql = "INSERT INTO project_documents (document_name, project_id, file_type, thumbnail)
@@ -2154,7 +2204,7 @@ if(isset($_POST['Fixtures'])){
         echo "<script>
         Swal.fire(
             'Oops...',
-            'This is not a supported file!',
+            'This is not a supported file or image size is too large!',
             'error'
           )
         </script>";
@@ -2241,7 +2291,10 @@ if(isset($_POST['project_id33'])){
       $file_tmp=$_FILES["files"]["tmp_name"][$key];
       $ext=pathinfo($file_name,PATHINFO_EXTENSION);
       // echo $file_name;
-      if(in_array($ext,$extension)) {
+      if($_FILES['files']['size'][$key] >= $maxsize) {
+        $errors[] = 'File too large. File must be less than 2 megabytes.';
+      }
+      if(in_array($ext,$extension) && count($errors) === 0) {
           if(!file_exists("../../uploads/".$file_name)) {
               if(move_uploaded_file($file_tmp=$_FILES["files"]["tmp_name"][$key],"../../uploads/".$file_name)){
                 $sql = "INSERT INTO property_floorplans (document_name, project_id, property_id)
@@ -2277,7 +2330,7 @@ if(isset($_POST['project_id33'])){
         echo "<script>
         Swal.fire(
             'Oops...',
-            'This is not a supported file!',
+            'This is not a supported file or image size is too large!',
             'error'
           )
         </script>";
@@ -2322,10 +2375,201 @@ if(isset($_POST['x40'])){
     </script>";
   }
 }
+//delete documents of properties
+if(isset($_POST['imagenbame'])){
+  $imagename1 = $_POST['imagenbame'];
+    // echo "<script>alert('".$imagename1."')</script>";
+    $sql = "DELETE FROM property_documents WHERE document_name='$imagename1'";
 
+    if ($conn->query($sql) === TRUE) {
+      if (unlink("../../uploads/".$imagename1)) {
+        echo "<script>
+        Swal.fire({
+          icon: 'success',
+          title: 'Done...',
+          text: 'Document has been deleted permanently!',
+          allowOutsideClick: false
+        })
+        $( 'button.swal2-confirm' ).click(function() {
+          location.reload();
+        });
+        </script>";
+      }
+      else{
+        echo "<script>
+        Swal.fire({
+          icon: 'success',
+          title: 'Done...',
+          text: 'Document has been deleted permanently - still present in file manager!',
+          allowOutsideClick: false
+        })
+        $( 'button.swal2-confirm' ).click(function() {
+          location.reload();
+        });
+        </script>";
 
+      }
+    }
+    else {
+      echo 'There was a error deleting the file ' . $filename;
+    }
+}
 // forgot password
 if(isset($_POST['forgotpasswordemail'])){
 //   echo "<script>alert('asdfasdf')</script>";
+}
+
+
+//filter for available properties
+if(isset($_POST['x51']) && isset($_POST['x52']) ){
+  $ifcondition = 1;
+  // echo "<script>console.log('".$ifcondition."')</script>"; 
+}
+elseif(isset($_POST['x53']) && isset($_POST['x54'])){
+  $ifcondition = 2;
+}
+
+
+
+//ifcondition code to write functionality in switch case
+switch ($ifcondition) {
+  //filter for available properties
+  case 1:
+    $project_id = $_POST['x51'];
+    $agent_id = $_POST['x52'];
+    if($project_id == "Project Title" && $agent_id != "Agent Name"){
+      $filterquery = "SELECT p.*, r.*, p1.Title  FROM properties p  join property_sold_by r on r.property_id = p.id join projects p1 on p.project_id = p1.id where p.status1 = 'Sold' and r.sold_by = '$agent_id'";
+      // echo "<script>console.log('project name not selected')</script>";
+    }
+    elseif($project_id != "Project Title" && $agent_id == "Agent Name"){
+      $filterquery = "SELECT p.*, r.*, p1.Title  FROM properties p  join property_sold_by r on r.property_id = p.id join projects p1 on p.project_id = p1.id where p.status1 = 'Sold' and p.project_id = '$project_id'";
+      // echo "<script>console.log('Agent name not selected')</script>";
+    }
+    elseif($project_id == "Project Title" && $agent_id == "Agent Name"){
+      $filterquery = "SELECT p.*, r.*, p1.Title  FROM properties p  join property_sold_by r on r.property_id = p.id join projects p1 on p.project_id = p1.id where p.status1 = 'Sold'";
+      // echo "<script>console.log('both not selected')</script>";
+    }
+    elseif($project_id != "Project Title" && $agent_id != "Agent Name"){
+      $filterquery = "SELECT p.*, r.*, p1.Title  FROM properties p  join property_sold_by r on r.property_id = p.id join projects p1 on p.project_id = p1.id where p.status1 = 'Sold' and p.project_id = '$project_id' and r.sold_by = '$agent_id'";
+      // echo "<script>console.log('both selected')</script>";
+    }
+      // echo "<script>console.log('".$project_id.$agent_id."')</script>";
+    // $sql = "SELECT * FROM properties where status1 = 'Available' and project_id = '$project_id'";
+    $result = $conn->query($filterquery);
+
+    if ($result->num_rows > 0) {
+      // output data of each row
+      while($row = $result->fetch_assoc()) {
+        $email1 = $row['sold_by'];
+        ?>
+        <tr>
+        <td><?php echo $row['idbyadmin']; ?></td>
+        <td><?php echo $row['Title']; ?></td>
+        <td><?php echo "$".number_format(intval($row['price'])); ?></td>
+        <td><?php echo $row['Beds']; ?></td>
+        <td><?php echo $row['Baths']; ?></td>
+        <td><?php echo $row['Cars']; ?></td>
+        <td><?php echo $row['Car_lots']; ?></td>
+        <td><?php echo $row['Storage_lots']; ?></td>
+        <td><?php echo $row['level1']; ?></td>
+        <td><?php echo $row['aspect']; ?></td>
+        <td><?php echo $row['totalarea']; ?></td>
+        <td><?php echo $row['status1']; ?></td>
+        
+        <?php
+          $sql433 = "SELECT * FROM users where email1 = '$email1'";
+          $result433 = $conn->query($sql433);
+
+          if ($result433->num_rows > 0) {
+            // output data of each row
+            while($row433 = $result433->fetch_assoc()) {
+              $first_name1 = $row433['firstname'];
+              $lastnaem = $row433['lastname'];
+              ?>
+        <td><?php echo $first_name1." ".$lastnaem; ?></td>
+              <?php
+            }
+          }
+          else{
+            ?>
+                        <td><?php echo $email1; ?></td>
+            <?php
+          }
+        ?>
+        <td></td>
+      </tr>
+      <?php
+          }
+      }
+    break;
+  case 2:{
+    $project_id = $_POST['x53'];
+    $agent_id = $_POST['x54'];
+    if($project_id == "Project Title" && $agent_id != "Agent Name"){
+      $filterquery = "SELECT p.*, r.*, p1.Title  FROM properties p  join property_reserved_by r on r.property_id = p.id join projects p1 on p.project_id = p1.id where p.status1 = 'Reserved' and r.reserved_by = '$agent_id'";
+      // echo "<script>console.log('project name not selected')</script>";  
+    }
+    elseif($project_id != "Project Title" && $agent_id == "Agent Name"){
+      $filterquery = "SELECT p.*, r.*, p1.Title  FROM properties p  join property_reserved_by r on r.property_id = p.id join projects p1 on p.project_id = p1.id where p.status1 = 'Reserved' and p.project_id = '$project_id'";
+      // echo "<script>console.log('Agent name not selected')</script>";
+    }
+    elseif($project_id == "Project Title" && $agent_id == "Agent Name"){
+      $filterquery = "SELECT p.*, r.*, p1.Title  FROM properties p  join property_reserved_by r on r.property_id = p.id join projects p1 on p.project_id = p1.id where p.status1 = 'Reserved'";
+      // echo "<script>console.log('both not selected')</script>";
+    }
+    elseif($project_id != "Project Title" && $agent_id != "Agent Name"){
+      $filterquery = "SELECT p.*, r.*, p1.Title  FROM properties p  join property_reserved_by r on r.property_id = p.id join projects p1 on p.project_id = p1.id where p.status1 = 'Reserved' and p.project_id = '$project_id' and r.reserved_by = '$agent_id'";
+      // echo "<script>console.log('both selected')</script>";
+    }
+    $result = $conn->query($filterquery);
+    if ($result->num_rows > 0) {
+      // output data of each row
+      while($row = $result->fetch_assoc()) {
+        $email1 = $row['reserved_by'];
+        ?>
+        <tr>
+        <td><?php echo $row['idbyadmin']; ?></td>
+        <td><?php echo $row['Title']; ?></td>
+        <td><?php echo "$".number_format(intval($row['price'])); ?></td>
+        <td><?php echo $row['Beds']; ?></td>
+        <td><?php echo $row['Baths']; ?></td>
+        <td><?php echo $row['Cars']; ?></td>
+        <td><?php echo $row['Car_lots']; ?></td>
+        <td><?php echo $row['Storage_lots']; ?></td>
+        <td><?php echo $row['level1']; ?></td>
+        <td><?php echo $row['aspect']; ?></td>
+        <td><?php echo $row['totalarea']; ?></td>
+        <td><?php echo $row['status1']; ?></td>
+        
+        <?php
+          $sql433 = "SELECT * FROM users where email1 = '$email1'";
+          $result433 = $conn->query($sql433);
+
+          if ($result433->num_rows > 0) {
+            // output data of each row
+            while($row433 = $result433->fetch_assoc()) {
+              $first_name1 = $row433['firstname'];
+              $lastnaem = $row433['lastname'];
+              ?>
+        <td><?php echo $first_name1." ".$lastnaem; ?></td>
+              <?php
+            }
+          }
+          else{
+            ?>
+                        <td><?php echo $email1; ?></td>
+            <?php
+          }
+        ?>
+        <td></td>
+      </tr>
+      <?php
+          }
+      }
+    // echo "<script>console.log('".$project_id.$agent_id."')</script>";
+  }
+  default:
+    # code...
+    break;
 }
 ?>

@@ -397,6 +397,7 @@ if ($result->num_rows > 0) {
                               </td>
                               <td>
                                 <?php
+                              if($row['status1'] == 'Reserved'){
                                 $sql502 = "SELECT * FROM property_reserved_by where property_id = '$idofproperty'";
                                 $result502 = $conn->query($sql502);
                                 
@@ -412,12 +413,34 @@ if ($result->num_rows > 0) {
                                   $buyername = '';
                                   $advance_paid = '';
                                 }
-                                if($row['status1'] == 'Reserved'){
                                   ?>
                                 <p class="item-heading">Buyer Name:</p>
                                 <h6 class="fs-18"><?php echo $buyername; ?></h6>
                                   <?php
                                 }
+
+                                if($row['status1'] == 'Sold'){
+                                  $sql503 = "SELECT * FROM property_sold_by where property_id = '$idofproperty' ORDER BY id DESC LIMIT 1;";
+                                  $result503 = $conn->query($sql503);
+                                  
+                                  if ($result503->num_rows > 0) {
+                                    // output data of each row
+                                    $row503 = $result503->fetch_assoc();
+                                    $sold_by = $row503['sold_by'];
+                                    $buyername = $row503['buyer_name'];
+                                    // $advance_paid = $row502['advance_paid'];
+                                    $timeanddate = $row503['timeanddate'];
+                                  }
+                                  else{
+                                    $sold_by = '';
+                                    $timeanddate = '';
+                                    $buyername = '';
+                                  }
+                                    ?>
+                                  <p class="item-heading">Buyer Name:</p>
+                                  <h6 class="fs-18"><?php echo $buyername; ?></h6>
+                                    <?php
+                                  }
                                 ?>
                               </td>
                             </tr>
@@ -431,7 +454,21 @@ if ($result->num_rows > 0) {
                                 if($row['status1'] == 'Reserved'){
                                   ?>
                                 <p class="item-heading">Deposit Paid:</p>
-                                <h6 class="fs-18"><?php echo $advance_paid; ?></h6>
+                                <h6 class="fs-18"><?php 
+                                if($advance_paid == "on"){
+                                  echo "Yes";
+                                } 
+                                else{
+                                  echo "No";
+                                }
+                                
+                                ?></h6>
+                                  <?php
+                                }
+                                if($row['status1'] == 'Sold'){
+                                  ?>
+                                <p class="item-heading">Sold By:</p>
+                                <h6 class="fs-18"><?php echo $sold_by; ?></h6>
                                   <?php
                                 }
                                 ?>
@@ -447,18 +484,13 @@ if ($result->num_rows > 0) {
                                 if($row['status1'] == 'Reserved'){
                                   ?>
                                 <p class="item-heading">Reserved By:</p>
-                                <?php 
-                                // $msdf = "SELECT firstname FROM users where email1 = '$reserved_by'";
-                                // $result2324 = $conn->query($msdf);
-                                
-                                // if ($result2324->num_rows > 0) {
-                                //   // output data of each row
-                                //   while($row54234 = $result2324->fetch_assoc()) {
-                                // $first_name = $row54234['firstname'];
-                                //   }
-                                // }
-                                ?>
                                 <h6 class="fs-18"><?php echo $reserved_by; ?></h6>
+                                  <?php
+                                }
+                                if($row['status1'] == 'Sold'){
+                                  ?>
+                                <p class="item-heading">Date of Selling:</p>
+                                <h6 class="fs-18"><?php echo $timeanddate; ?></h6>
                                   <?php
                                 }
                                 ?>

@@ -48,7 +48,7 @@ if($statusas == 'inactive'){
   <body>
     <header>
       <a href="./index.php" class="brand-icon">
-        <img src="../assets/images/logo.svg" alt="" />
+        <img src="./assets/images/logo.svg" alt="" />
       </a>
       <div class="d-flex justify-content-between align-items-center">
         <div class="toggle-menu">

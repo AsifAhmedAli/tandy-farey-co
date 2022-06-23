@@ -7,7 +7,29 @@ $idofproperty = $_GET['propertyid'];
 // use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 // echo "<script>alert('".$idofproperty."')</script>";
+// $allproperties = [];
+$sql = "SELECT id from properties where id = (SELECT min(id) from properties where id > '$idofproperty') and project_id = '$id'";
+// -- select * from foo where id = (select min(id) from foo where id > 4)";
+$result = $conn->query($sql);
 
+if ($result->num_rows > 0) {
+  // output data of each row
+  while($row = $result->fetch_assoc()) {
+    $nextid = $row['id'];
+  }
+}
+$sql = "SELECT id from properties where id = (SELECT max(id) from properties where id < '$idofproperty') and project_id = '$id'";
+// -- select * from foo where id = (select min(id) from foo where id > 4)";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+  // output data of each row
+  while($row = $result->fetch_assoc()) {
+    $previousid = $row['id'];
+  }
+}
+// echo $nextid;
+// print_r($allproperties);
 ?>
 
 <main>
@@ -82,6 +104,30 @@ if ($result->num_rows > 0) {
   }
 ?>
     <div class="content" id="canbereplaced">
+        <div class="row">
+        <?php
+                if($previousid !=''){
+        ?>
+                    <div class="col ">
+                        <a href="edit-property.php?id=<?php echo $id; ?>&propertyid=<?php echo $previousid; ?>" class="btn fs-18">
+                        <span class="material-icons">arrow_back</span>
+                        Previous
+                        </a>
+                    </div>
+        <?php
+                }
+            if($nextid != ''){
+                ?>
+                <div class="col text-end">
+                <a href="edit-property.php?id=<?php echo $id; ?>&propertyid=<?php echo $nextid; ?>" class="btn fs-18">
+                Next
+                <span class="material-icons">arrow_forward</span>
+                </a>
+            </div>
+        <?php    
+        }
+            ?>
+        </div>
         <h1 class="mainUserText"><?php echo $Title; ?></h1>
         <p class="fs-20 mb-3"><?php echo $Street_Number." ".$Street_Name." ".$State; ?></p>
         <div class="d-flex align-items-center justify-content-between flex-wrap">

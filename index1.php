@@ -6,17 +6,29 @@ $result502 = $conn->query($sql502);
 echo "<script>
 var numberofpropertybyagent = [];
 var reserved_by = [];
+var sumeduppricereserved = [];
 </script>";
 if ($result502->num_rows > 0) {
   // output data of each row
   while($row502 = $result502->fetch_assoc()){
     $numberofpropertybyagent = $row502['numberofpropertybyagent'];
+    $reserved_by_email = $row502['reserved_by'];
     $reserved_by = $first_name;
+    // $sumeduppricereserved += $row502['price'];
+    $sql5322 = "SELECT sum(p.price) as sumedprice FROM properties p inner join property_reserved_by r on r.property_id = p.id where reserved_by = '$reserved_by_email'";
+    $result5322 = $conn->query($sql5322);
+    
+    if ($result5322->num_rows > 0) {
+      // output data of each row
+      $row5322 = $result5322->fetch_assoc();
+        $sumeduppricereserved = $row5322['sumedprice'];
+      }
     echo '<script>
     numberofpropertybyagent.push("'.$numberofpropertybyagent.'");
     reserved_by.push("'.$reserved_by.'");
+    sumeduppricereserved.push("'.$sumeduppricereserved.'");
+    // console.log("'.$sumeduppricereserved.'");
     </script>';
-    
   }
 }
 
@@ -50,12 +62,12 @@ if ($result502->num_rows > 0) {
       yourNumber = parseInt("33B2DF", 16);
       // console.log(yourNumber);
       // console.log(hexString);
-      var twodarray = [["Agent", "Reserved", { role: "style" }]];
+      var twodarray = [["Agent", "Reserved", { role: "style" }, {type: 'string', role: 'tooltip', 'p': {'html': true}}]];
       for(i = 0; i < numberofpropertybyagent.length; i++){
         yourNumber+= 111111;
       // console.log(yourNumber);
         hexString = yourNumber.toString(16);
-        twodarray.push([reserved_by[i],parseInt(numberofpropertybyagent[i]),hexString]); 
+        twodarray.push([reserved_by[i],parseInt(numberofpropertybyagent[i]),hexString, "<div class='p-2 fs-15'>"+reserved_by[i]+"<br>Reserved: "+parseInt(numberofpropertybyagent[i])+"<br>GR: "+ sumeduppricereserved[i]+"</div>"]); 
         // console.log(twodarray);
       }
 
@@ -102,6 +114,7 @@ if ($result502->num_rows > 0) {
           },
           1,
           2,
+          3,
         ]);
 
         var options = {
@@ -116,6 +129,7 @@ if ($result502->num_rows > 0) {
             labeledValueText: "both",
             textStyle: { color: "black", fontSize: 15, fontName: "Poppins" },
           },
+          tooltip: {isHtml: true},
           hAxis: {
             minValue: smallest,
             maxValue: largest,
@@ -240,17 +254,30 @@ if ($result522->num_rows > 0) {
       }
   </script>
 <?php
-$sql523 = "SELECT count(*) as sold_by FROM property_sold_by where sold_by = '$employee_username'";
+$sql523 = "SELECT count(*) as sold_by1, sold_by FROM property_sold_by where sold_by = '$employee_username'";
 $result523 = $conn->query($sql523);
 echo "<script>
     var sold_by = [];
+    var sumeduppricesold = [];
 </script>";
 if ($result523->num_rows > 0) {
   // output data of each row
   $row523 = $result523->fetch_assoc();
-    $sold_by = $row523['sold_by'];
+    $sold_by = $row523['sold_by1'];
+    $sold_by_email = $row523['sold_by'];
+    $sql53221 = "SELECT sum(p.price) as sumedprice1 FROM properties p inner join property_sold_by r on r.property_id = p.id where  sold_by = '$sold_by_email'";
+    $result53221 = $conn->query($sql53221);
+    
+    if ($result53221->num_rows > 0) {
+      // output data of each row
+      $row53221 = $result53221->fetch_assoc();
+        $sumeduppricesold = $row53221['sumedprice1'];
+        
+        // echo "<script>console.log('".$sumeduppricesold."')</script>";
+      }
     echo "<script>
     sold_by.push('".$sold_by."');
+    sumeduppricesold.push('".$sumeduppricesold."');
     </script>";
 }
 ?>
@@ -259,12 +286,12 @@ if ($result523->num_rows > 0) {
       // yourNumber1 = parseInt("33B2DF", 16);
       // console.log(yourNumber);
       // console.log(hexString);
-      var twodarray2 = [["Agent", "Sold", { role: "style" }]];
+      var twodarray2 = [["Agent", "Sold", { role: "style" }, {type: 'string', role: 'tooltip', 'p': {'html': true}}]];
       for(i = 0; i < sold_by.length; i++){
         // yourNumber1+= 111111;
       // console.log(yourNumber);
         hexString2 = "red";
-        twodarray2.push([reserved_by[i],parseInt(sold_by[i]),hexString2]); 
+        twodarray2.push([reserved_by[i],parseInt(sold_by[i]),hexString2, "<div class='p-2 fs-15'>"+reserved_by[i]+"<br>Sold: "+parseInt(sold_by[i])+"<br>GR: "+ sumeduppricesold[i]+"</div>"]); 
         // console.log(twodarray);
       }
 
@@ -311,6 +338,7 @@ if ($result523->num_rows > 0) {
           },
           1,
           2,
+          3,
         ]);
 
         var options = {
@@ -329,6 +357,7 @@ if ($result523->num_rows > 0) {
             // fillStyle: "red",
             textStyle: { color: "black", fontSize: 15, fontName: "Poppins" },
           },
+          tooltip: {isHtml: true},
           hAxis: {
             minValue: smallest,
             maxValue: largest,
