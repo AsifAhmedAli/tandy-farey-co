@@ -1,3 +1,11 @@
+<style>
+    @media screen and (min-width: 1250px){
+        .modal-dialog.modal-xl{
+            max-width:1249px !important;
+        }
+    }
+    
+</style>
 
 <?php
 include("./admin_header.php");
